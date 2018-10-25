@@ -11,6 +11,14 @@
 
 	********************************************************************************************
 
+	[ NOTE: this is a template file for "Application Developers," the ones who create the
+	  application and distribute it. "End User" is the individual you are developing for, the one
+	  who will ultimately download and install your code. You will find comments both for the
+	  Application Developer as well as the End User in this custom directory. Try to keep them
+	  straight. The "End User" should only be asked to maintain their code and variables in the
+	  custom directory as it will not be overwritten during updates. Also, it is advised that the
+	  application developer not modify anything in the php-project-framework directory. ]
+
 	[ place your comments about this script file here ]
 
 	[ place your comments about this script file here ]
@@ -21,9 +29,9 @@
 		This is function template file from the PHP PROJECT FRAMEWORK library.
 		Visit github.com/chadkluck/php-project-framework page for more information.
 		FRAMEWORK FILE: custom/inc.php
-		FRAMEWORK FILE VERSION: 2018-03-19
+		FRAMEWORK FILE VERSION: 2018-10-22
 
-		NOTE: This application will work out of the box without any modifications to this file
+		NOTE: This application WILL work out of the box without any modifications to this file
 
 		This file allows custom modifications and since it is in the custom/ directory of this
 		php application it will not be overriden by Git requests.
@@ -44,13 +52,12 @@
 
 /*  ============================================================================================
     ********************************************************************************************
-    ERROR REPORTING - CUSTOMIZABLE PART 1
+    ERROR REPORTING - CUSTOMIZABLE
 	********************************************************************************************
 
 		These 2 lines should be commented out after installation in a production environment
 
-		This is the first customizable part of this file. Part 2 is in the next section below
-		and Part 3 is located at the end.
+		This is the only customizable part of this file.
 
 	============================================================================================
 */
@@ -60,43 +67,25 @@ error_reporting(E_ALL); // comment out when in production
 
 /*  ============================================================================================
     ********************************************************************************************
-    CONFIG VARIABLE - CUSTOMIZABLE PART 2
+    CONFIG VARIABLE - Now compatible with PHP 7.x and above only
 	********************************************************************************************
 
-		The default method is to have $CFG declared as a global variable which is accessed via
-		the getCfg() function. This works in all versions of PHP but doesn't adhere to the
-		practice of declaring it as a CONSTANT variable (as CFG shouldn't be editable)
+		Since PHP 5.x is reaching end of life the template will use 7.x methods and not
+		be backwards compatible. This will simplify the setup process.
 
-		However, if you are using PHP 7+ AND you want to protect $CFG from being modified,
-		you can change it to a proper CONSTANT variable.
-
-		CFG should only be accessed using getCfg() as that is a central point to change between
-		referencing a proper CFG Constant and $CFG global.
-
-		The only benefit of changing from global $CFG to a CONSTANT CFG is just a best practice.
-
-		Find the line(s) in this code section preceded by "** CODE CHANGE: **"
-		Followed by the comment "// php <7" or "// php 7+" and then
-		follow the instructions of commenting out, or uncommenting
-
-		When done skip to "CUSTOM VARS AND FUNCTIONS - CUSTOMIZABLE PART 2" below
+		7.x allows arrays to be declared as CONSTANTS so we will get rid of the 5.x ways of doing
+		things. If you, for what ever reason, need the 5.x way of doing things then refer to an
+		older repository.
 
 	============================================================================================
 */
 
-/* ** CODE CHANGE (choose 1): ** */
-$CFG = parse_ini_file("config.ini.php", true, INI_SCANNER_NORMAL ); // php <7 (uncomment if using <7 || comment out if using php 7+)
-//define('CFG', parse_ini_file("config.ini.php", true, INI_SCANNER_NORMAL )); // php 7+ (uncomment if using +7 || comment out if using php <7)
+// calls in the config.ini.php file and places it in the CONSTANT variable CFG
+define('CFG', parse_ini_file("config.ini.php", true, INI_SCANNER_NORMAL ));
 
+// getCfg() is the function used to access the constant variable CFG
 function getCfg( $index = NULL ) {
-
-	/* ** CODE CHANGE (leave for <7): ** */
-	global $CFG; // php <7 (uncomment if using <7 || comment out if using php 7+)
-
-	/* ** CODE CHANGE (choose 1): ** */
-	return ( $index ? (isset( $CFG[$index] ) ? $CFG[$index] : NULL ) : $CFG ); // php <7 (uncomment if using <7 || comment out if using php 7+)
-	//return ( $index ? (isset( CFG[$index] ) ? CFG[$index] : NULL ) : CFG ); // php 7+ (uncomment if using +7 || comment out if using php <7)
-
+	return ( $index ? (isset( CFG[$index] ) ? CFG[$index] : NULL ) : CFG );
 }
 
 /*  ============================================================================================
@@ -110,8 +99,6 @@ function getCfg( $index = NULL ) {
 		understanding that doing so may break things and it is best practice to just update the
 		paths section in the config.ini.php file.
 
-		Skip to "CUSTOM VARS AND FUNCTIONS - CUSTOMIZABLE PART 3" below
-
 	============================================================================================
 */
 
@@ -121,7 +108,7 @@ function getPathIncLib() { return ( getCfg("paths")["inc_lib"] ? getCfg("paths")
 function getPathAssets() { return ( getCfg("paths")["assets"]  ? getCfg("paths")["assets"]  . "assets/"  : "assets/" ) ; }
 
 // do not modify without good reason
-$inc_config_version = "1.1"; // in the unlikely event this file needs to be manually updated from the repository
+$inc_config_version = "1.2"; // in the unlikely event this file needs to be manually updated from the repository
 								// this will let you know if you need to replace this file with a new version
 								// If you do, be sure to copy over your modifications!
 
@@ -133,30 +120,19 @@ require_once( getPathIncApp()."inc-app.php" ); // this app''s initialization
 
 /*  ============================================================================================
     ********************************************************************************************
-    CUSTOM VARS AND FUNCTIONS - CUSTOMIZABLE PART 3
+    CUSTOM VARS AND FUNCTIONS
 	********************************************************************************************
 
-		This is where you can place custom code such as variables, functions, includes, and php
+		functions-custom.php is where the end user (the one who installed the application)
+		can place custom code and functions to extend the application. The application developer
+		can create template functions and place them in functions-custom.php for the installer
+		to modify without worry of being overwritten during updates.
 
-		Why is this allowed? Suppose you want to override app functions or add a logging
-		mechinism. These can be "safely" added here. "safely" meaning they won't be overriden
-		by Git updates. You're on your own for security.
-
-		Anything in the custom dir will not be updated/replaced on git requests (in theory) so
-		anything you add to these files should remain untouched during updates.
-
-		Use it wisely, though. Any code you place here should be self contained within this file.
-		While you can include some of your own includes with functions you should be careful
-		about updating any other application file outside of the custom directory if you are
-		planning on updating from the public git repository.
+		See comments in functions-custom.php for more information.
 
 	============================================================================================
 */
 
-// custom code here:
-// NOTE: This is not for application functions - this is for the end user to place own custom code
-// if you are developing an application based upon the php-project-framework place all code in
-// inc/functions-app.php
-
+require_once( "functions-custom.php" );
 
 ?>
