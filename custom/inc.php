@@ -1,54 +1,41 @@
 <?php
 /*  ============================================================================================
     ********************************************************************************************
+	[NAME OF APPLICATION]: Application Configuration Initialization
+    ********************************************************************************************
 
-	APPLICATION CONFIGURATION
-	[NAME OF APPLICATION] | [github url for your application if applicable]
-	[your name/company name]
-	[your website]
-	Last Modified: [date/version]
-	[ any copyright or other info ]
+	[your name/company name] ([your website])
+	[github url for your application if applicable]
 
 	********************************************************************************************
 
-	[ NOTE: this is a template file for "Application Developers," the ones who create the
-	  application and distribute it. "End User" is the individual you are developing for, the one
-	  who will ultimately download and install your code. You will find comments both for the
-	  Application Developer as well as the End User in this custom directory. Try to keep them
-	  straight. The "End User" should only be asked to maintain their code and variables in the
-	  custom directory as it will not be overwritten during updates. Also, it is advised that the
-	  application developer not modify anything in the php-project-framework directory. ]
+	FILE LAST MODIFIED: YYYY-MM-DD - [dev name]
 
-	[ place your comments about this script file here ]
+	PURPOSE: Brings in the config file
 
-	[ place your comments about this script file here ]
+	********************************************************************************************
 
-
+	********************************************************************************************
 	********************************************************************************************
 
 		This is function template file from the PHP PROJECT FRAMEWORK library.
 		Visit github.com/chadkluck/php-project-framework page for more information.
 		FRAMEWORK FILE: custom/inc.php
-		FRAMEWORK FILE VERSION: 2018-10-22
-
-		NOTE: This application WILL work out of the box without any modifications to this file
-
-		This file allows custom modifications and since it is in the custom/ directory of this
-		php application it will not be overriden by Git requests.
-
-		Very little if anything needs to be changed (beyond the strong recommendation of
-		changing the ERROR REPORTING section. Beyond that it''s only if you want to lock down
-		some code to meet best practices or add your own custom code at the end.
-
-		In the unlikely event that there is a new base template for this file available from
-		the git repository, the $inc_config_version will be flagged with instructions to
-		manually update this file. However, we will strive for backwards compatibility to make
-		sure nothing breaks while waiting for a manual update.
+		FRAMEWORK FILE VERSION: 2018-10-30
 
 	********************************************************************************************
 	============================================================================================
 */
 
+/*  ============================================================================================
+	********************************************************************************************
+
+	THE ONLY THING THAT IS CUSTOMIZABLE IN THIS FILE IS ERROR REPORTING!
+	Do not update anything else!
+
+	********************************************************************************************
+	============================================================================================
+*/
 
 /*  ============================================================================================
     ********************************************************************************************

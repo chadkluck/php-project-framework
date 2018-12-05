@@ -1,20 +1,12 @@
 <?php
 /*  ============================================================================================
     ********************************************************************************************
-	[NAME OF APPLICATION]: Functions for Application
+	[NAME OF APPLICATION]: Application Initialization
     ********************************************************************************************
-
-	[your name/company name] ([your website])
-	Version: 0.0.1-YYYYMMDD-HHMM
-	[github url for your application if applicable]
-
-	[ any copyright or other info ]
-
-	********************************************************************************************
 
 	FILE LAST MODIFIED: YYYY-MM-DD - [dev name]
 
-	PURPOSE: Core functions for application
+	PURPOSE: Initialize the Application
 
 	********************************************************************************************
 
@@ -28,7 +20,7 @@
 		This is function template file from the PHP PROJECT FRAMEWORK library.
 		Visit github.com/chadkluck/php-project-framework page for more information.
 		FRAMEWORK FILE: inc/inc-app.php
-		FRAMEWORK FILE VERSION: 2018-08-10
+		FRAMEWORK FILE VERSION: 2018-08-30
 
 	********************************************************************************************
 	============================================================================================
@@ -39,8 +31,6 @@
     INITIALIZE APP
 	********************************************************************************************
 */
-
-// [ place code in this area ]
 
 // require an ssl connection (if required as set in config). If request was sent via http, redirect to https
 requireSSL(); // note that even with a redirect, the initial request was sent insecurly
@@ -67,5 +57,7 @@ setDebugSwitch();
 
 // start script execution timer for troubleshooting
 setExeStartTime();
+
+// [ place additional initialization code here ]
 
 ?>

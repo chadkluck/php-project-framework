@@ -4,13 +4,6 @@
 	[NAME OF APPLICATION]: Custom Functions for Application
 	********************************************************************************************
 
-	[your name/company name] ([your website])
-	[github url for your application if applicable]
-
-	[ any copyright or other info ]
-
-	********************************************************************************************
-
 	FILE LAST MODIFIED: YYYY-MM-DD - [dev name]
 
 	PURPOSE: Custom functions for application
@@ -27,7 +20,7 @@
 		This is function template file from the PHP PROJECT FRAMEWORK library.
 		Visit github.com/chadkluck/php-project-framework page for more information.
 		FRAMEWORK FILE: inc/inc-app.php
-		FRAMEWORK FILE VERSION: 2018-10-24
+		FRAMEWORK FILE VERSION: 2018-10-30
 
 	********************************************************************************************
 	============================================================================================
@@ -55,8 +48,30 @@
      to document how the end user can update it ]
 */
 
+/* *********************************************************************************************
+ * foo()
+ *
+ * A function that does something custom
+ *
+ */
+
 function foo() {
 	/* do something custom */
+}
+
+/* *********************************************************************************************
+ * bar()
+ *
+ * A function that does something custom, and uses the $app variable
+ *
+ */
+
+function bar() {
+	global $app; // we are going to change app variables so we need to call it from global
+
+	$app['bar'] = "42"; // we change the app variable "bar" to "42"
+
+	return getApp("bar"); // we return the value of bar using the safe getApp function
 }
 
 ?>

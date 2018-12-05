@@ -1,8 +1,19 @@
 <?php
 // api example
 require_once __DIR__."/custom/inc.php"; // this is required to be placed at start of execution - it loads the config, app vars, core app functions, and init
+authorizeAPIcall(); // make sure the call to this script is authorized (if restricted to IP or apikey) - this is required if you want to authorize api requests by key or ip
+
+/* ****************************************************************************
+ *  GENERATE RESPONSE
+ *
+ *  All code to generate the the response array goes here. This function
+ *  returns an array that is later encoded into json format when the script
+ *  executes below.
+ */
 
 function generateResponse() {
+
+	// code to generate a response goes here
 
 	$json = array();
 
@@ -12,14 +23,13 @@ function generateResponse() {
 	return $json;
 }
 
-/* **********************************************
- *  START
+/* ****************************************************************************
+ *  EXECUTE
  */
 
-// begin JSON output
+if ( isApprovedOrigin() ) {
 
-if(isApprovedOrigin()) {
-
+	// call generateResponse from above
 	$json = generateResponse();
 
 	if(!debugOn()) {
@@ -40,7 +50,7 @@ if(isApprovedOrigin()) {
 	}
 
 } else {
-	echo (getRequestOrigin()." not an allowed origin");
+	returnNotApprovedOrigin();
 }
 
 ?>

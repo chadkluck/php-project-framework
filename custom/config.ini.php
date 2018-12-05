@@ -75,7 +75,7 @@ page-cache = 3600
 allow-debug = 1
 ; FORMAT:      1|0
 ; DESCRIPTION: Will we allow debugging which captures logs and outputs data to user at end of script run
-; NOTE:        This does not turn debugging on, a debug param POST['debug']=1 or GET['debug']=1 must be sent with the page request
+; NOTE:        This does not turn debugging on, a debug param debug=true must be sent with the page request
 ; RECOMMENDED: Set to 1 (true) when implementing/troubleshooting, 0 (false) when in production
 ; DEFAULT:     1 (just because of implementing. When not troubleshooting set to 0 (false) )
 
@@ -100,6 +100,32 @@ require-ssl = 1
 ; FORMAT:      1|0
 ; DESCRIPTION: Should HTTPS be forced?
 ; DEFAULT:     1
+
+
+ip-restrict-allow-ip = ""
+; FORMAT:      Regular Expression (eg "/^10\./" )
+; DESCRIPTION: Should access be restricted by IP? If this is set then access will only be granted to clients from a specific IP or IP range.
+; NOTE:        By default this is checked in the custom/inc.php file which executes on all script executions. You may move it to a subset of
+;              pages by removing, or commenting out from custom/inc.php and placing a call to restrictByIp() at the top of any other page you wish.
+;              You can further restrict API access by setting api-restrict-access-ip below
+; DEFAULT:     ""
+
+
+ip-restrict-allow-admin = 0
+; FORMAT:      1|0
+; DESCRIPTION: Even if ip-restrict is set, can a logged in admin override it? If you always want the IP to be locked, then this is 0. Useful
+;              if you only want admins to access when they are on a set IP range, or if you beleive admin credentials could be comprimised.
+;              Setting it to 1 is useful if you want to restrict access to basic functions but have another means of authenticating as an admin.
+; DEFAULT:     0
+
+
+ip-restrict-allow-user = 0
+; FORMAT:      1|0
+; DESCRIPTION: Even if ip-restrict is set, can a logged in user override it? If you always want the IP to be locked, then this is 0. Useful
+;              if you beleive admin credentials could be comprimised. Setting it to 1 is useful if you want to restrict access to basic
+;              functions but have another means of authenticating as a user. You will have to develop your own code to determine user roles and
+;              if a user has access to functionality.
+; DEFAULT:     0
 
 
 obfuscate-secrets = 1
@@ -147,24 +173,20 @@ oauth_secret = ""
 ; NOTE:        At this time oauth is not coded in the framework.
 
 
-api_key = ""
+api-key = ""
 ; FORMAT:      string
 ; DESCRIPTION: If this application will be accessed by other servers (not client-side scripts such as JavaScript running in the browser)
 ;			   You may restrict access by requiring the requesting server to provide an API key (or token), as if it were a password.
 ;              API keys should only be used for server to server communication. For greater security add the ip address or range of ip addresses
 ;              of expected requesting servers to api_ipaccess
-; NOTE:        This is a single, shared key and should not be used for multiple, untrusted, systems. Also note that code to check the api_key
-;              and api_ipaccess are not built into the framework, you will have to perform your own validation. Also note this should never be used
-;              to authenticate access via client side scripts or applications. Hard coded tokens are a bad, bad, bad idea.
+; NOTE:        This is a single, shared key and should not be used for multiple, untrusted, systems.
 ; DEFAULT:     ""
 
 
-api_ipaccess = ""
-; FORMAT:      regex
+api-restrict-access-ip = ""
+; FORMAT:      Regular Expression (eg "/^10\./" )
 ; DESCRIPTION: If this application will be accessed by other servers (not client-side scripts such as JavaScript running in the browser)
 ;			   You may restrict access by requiring the requesting server be from a designated ip address or range of ip addresses
-; NOTE:        Code to check the api_key and IP address are not built into the framework, you will have to perform your own validation.
-;              to authenticate access via client side scripts or applications. Hard coded tokens are a bad, bad, bad idea.
 ; DEFAULT:     ""
 
 

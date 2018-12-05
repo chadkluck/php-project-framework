@@ -7,7 +7,7 @@
 	github.com/chadkluck/php-project-framework
 
 	inc/functions.php
-	File Version: 20181011-1847
+	File Version: 20181201-2110
 
 	********************************************************************************************
 	============================================================================================
@@ -35,51 +35,221 @@ function getApp( $index = NULL ) {
 }
 
 
-/*  ============================================================================================
-    ********************************************************************************************
-0100    ACCESS, SECURITY, and DEBUGGING
-	********************************************************************************************
-		Use these functions to rapidly create logs, debugging output, and access restrictions
+/* =============================================================================================
+   *********************************************************************************************
+    ACCESS, SECURITY, and DEBUGGING
+   *********************************************************************************************
+	Use these functions to rapidly create logs, debugging output, and access restrictions
 
-	============================================================================================
+   =============================================================================================
 */
 
 
-/* **************************************************************************
+/* *********************************************************************************************
  *  LOGGING
+ * *********************************************************************************************
  */
 
-function logMsg($entry) {
+/* *********************************************************************************************
+ *  logMsg($message [, $dataArray])
+ * 
+ *  May be used by developers to add messages to a log while in debugging mode. Of all the log
+ *  options this is the simplist, writing to only the "event" log.
+ *
+ *  A log is only kept while in debug mode (see DEBUG MODE). Each entry is stored as an element
+ *  in an array and contains a timestamp, text message, and an optional data array.
+ *
+ *  The optional Data Array is useful when you want to record structured data along with a text string
+ *  describing it.
+ *
+ *  The log may be accessed using getLog("event")
+ *
+ *  @see getLog()
+ *  @see logAPIrequest()
+ *  @see logError()
+ *  @see logEntry()
+ *  @see setDebugSwitch()
+ *  
+ *  @param string $message The text of the message to log
+ *  @param array $dataArray Optional. Any associated array data to log
+ */
+function logMsg($message, $dataArray = array() ) {
+	
+	logEntry($message, "event", $dataArray);
+
+}
+
+/* *********************************************************************************************
+ *  logAPIrequest($url [, $response])
+ * 
+ *  May be used by developers to add API calls to a log while in debugging mode. This also writes
+ *  a copy to the "event" log.
+ *
+ *  A log is only kept while in debug mode (see DEBUG MODE). Each entry is stored as an element
+ *  in an array and contains a timestamp, url, and an optional response data array. Note that
+ *  logMsg() does not need to be called separately. Everything sent to this function is also
+ *  added to the "event" log.
+ *
+ *  The log may be accessed using getLog("api")
+ *
+ *  @see getLog()
+ *  @see logMsg()
+ *  @see logError()
+ *  @see logEntry()
+ *  @see setDebugSwitch()
+ *  
+ *  @param string $url The URL of the request
+ *  @param array $response Optional. Any associated array data to log
+ */
+function logAPIrequest($url, $response = array()) {
+	logMsg("API REQUEST: ".$url, $response);
+	logEntry($url, "api", $response);
+}
+
+/* *********************************************************************************************
+ *  logError($message [, $dataArray])
+ * 
+ *  May be used by developers to add error logs to the application's log data while in debugging 
+ *  mode. This also writes a copy to the "event" log.
+ *
+ *  A log is only kept while in debug mode (see DEBUG MODE). Each entry is stored as an element
+ *  in an array and contains a timestamp, message, and an optional data array. Note that
+ *  logMsg() does not need to be called separately. Everything sent to this function is also
+ *  added to the "event" log.
+ *
+ *  The log may be accessed using getLog("error")
+ *
+ *  @see getLog()
+ *  @see logMsg()
+ *  @see logAPIrequest()
+ *  @see logEntry()
+ *  @see setDebugSwitch()
+ *  
+ *  @param string $message The text of the message to log
+ *  @param array $dataArray Optional. Any associated array data to log
+ */
+function logError($message, $dataArray = array()) {
+	logMsg("ERROR: ".$message, $dataArray);
+	logEntry($message, "error", $dataArray);
+}
+
+/* *********************************************************************************************
+ *  logEntry($message, $type [, $dataArray])
+ * 
+ *  May be used by developers to add custom logs to the application's log data while in debugging 
+ *  mode.
+ *
+ *  A log is only kept while in debug mode (see DEBUG MODE). Each entry is stored as an element
+ *  in an array and contains a timestamp, message, and an optional data array.
+ *
+ *  Three default sets of logs may be kept: "event", "api", and "error". This function allows for
+ *  custom log types to be kept as well. However, it is advised that the main 3 types be used
+ *  instead as over-customization can lead to confusing code.
+ *
+ *  Also, since this function is used by logMsg(), logAPIrequest(), and logError() to log their
+ *  events this does not create an entry for "event" and by directly using this function you will
+ *  loose the double entry capability.
+ *
+ *  However...
+ *
+ *  _If you do code_ for custom types it is recommended that you use logError() and logAPIrequest()
+ *  as a template and place your custom logging function in your functions-app.php or functions-custom.php file:
+ *
+ *      // code from logError() function
+ *		function logError($message, $dataArray = array()) {
+ *			logMsg("ERROR: ".$message, dataArray);
+ *			logEntry($message, "error", $dataArray);
+ *		}
+ *
+ *  For example, if you were logging foo:
+ *
+ *      // example code to log foo
+ *		function logFoo($message, $dataArray = array()) {
+ *			logMsg("FOO: ".$message, dataArray);
+ *			logEntry($message, "foo", $dataArray);
+ *		}
+ *
+ *  Or if you were logging something complex:
+ *
+ *      // example code to log a foo bar request and the data array to organize multiple pieces of data
+ *		function logFooBarRequest($requestID, $foo, $bar, $ack) {
+ *			$dataArray = array();
+ *			$dataArray['foo'] = $foo;
+ *			$dataArray['bar'] = $bar;
+ *			$dataArray['ack'] = $ack;
+ *			
+ *			logMsg("Foo Bar for Request ID: ".$requestID, $dataArray);
+ *			logEntry($requestID, "foobar", $dataArray);
+ *		}
+ *
+ *  In the above example note that you could keep a running log which you can then come back
+ *  and match IDs with corresponding entries.
+ *
+ *  The log may be accessed using getLog($type)
+ *
+ *  @see getLog()
+ *  @see logMsg()
+ *  @see logError()
+ *  @see logAPIrequest()
+ *  @see logEntry()
+ *  @see setDebugSwitch()
+ *  
+ *  @param string $message The text of the message to log
+ *  @param string $type The log to add the entry to
+ *  @param array $dataArray Optional. Any associated array data to log
+ */
+function logEntry($message, $type, $dataArray = array() ) {
+	
 	global $app;
 
 	if( debugOn() ) {
-		$app['log']['event'][] = ["timestamp"=>microtime(true),"entry"=>$entry];
+		$entry = ["timestamp" => microtime(true), "message"=>$message];
+		if (count($dataArray)) {
+			$entry['data'] = $dataArray;
+		}
+		$type = preg_replace("/[^a-z0-9\-_]/", "", strtolower($type));
+		$app['log'][$type][] = $entry;
 	}
 
 }
 
-function getLog($type="") {
+/* *********************************************************************************************
+ *  getLog([$type])
+ * 
+ *  May be used by developers to get the application's logs while in debug mode.
+ *
+ *  A log is only kept while in debug mode (see DEBUG MODE). Each entry is stored as an element
+ *  in an array and contains a timestamp, message, and an optional data array. This function will
+ *  retrieve the logs for processing.
+ *
+ *  For example, to get error logs use: getLog("error")
+ *
+ *  @see getLog()
+ *  @see logMsg()
+ *  @see logAPIrequest()
+ *  @see logError()
+ *  @see logEntry()
+ *  @see setDebugSwitch()
+ *  
+ *  @param string $type Optional. The type of entries to return. If not included then all logs are returned. (Possible values: "event", "api", "error")
+ *  @return array Either all log entries or just the entries for a specified type
+ */
+function getLog($type = "") {
 
 	$log = array();
-
-	if ($type==="") {
-		$log = getApp('log');
-	} else if (isset(getApp('log')[$type])) {
-		$log = getApp('log')[$type];
-	}
-
-	return $log;
-}
-
-function logAPIrequest($url, $response="") {
-	global $app;
-
-	logMsg("API REQUEST: ".$url);
-
+	
 	if( debugOn() ) {
-		$app['log']['api'][] = ["time"=>microtime(true),"url"=>$url,"response"=>$response];
+		if ($type==="") { // get all the logs
+			$log = getApp('log');
+		} else if (isset(getApp('log')[strtolower($type)])) { // get only logs of type
+			$log = getApp('log')[strtolower($type)];
+		}
 	}
+	
+	return $log;
+	
 }
+
 
 /* **************************************************************************
  *  EXECUTION TIME
@@ -175,6 +345,78 @@ function printDebugHTML() {
 	if( isset($_SESSION) ) { sanitized_print_r($_SESSION); }
 
 	echo "</pre>\n</div>\n";
+}
+
+/* *********************************************************************************************
+ * restrictByIp()         - added 2018-10-31 chadkluck
+ *
+ * If the application is restricted by IP then we check access here. If the IP is not allowed
+ * then the application dies.
+ * The IP is set in the config.ini.php file under [security] ip-restrict-allow-ip
+ * Also, admins and users can override if they are logged in (if override is set)
+ * By default this is called in the inc/inc-app.php file for use on all application pages.
+ * However the application developer may choose to move this restriction to certain pages
+ * within the app by commenting it out of the inc/inc-app.php file and moving it to other
+ * desired locations.
+ *
+ */
+
+function restrictByIp() {
+
+	if( getCfg('security')['ip-restrict-allow-ip'] ) {
+
+		// see if there is an admin or user override
+		if  (
+			   ( getCfg('security')['ip-restrict-allow-admin'] && userIsAdmin() )
+			|| ( getCfg('security')['ip-restrict-allow-user']  && userIsUser()  )
+			|| ( preg_match( getCfg('security')['ip-restrict-allow-ip'], getRequestClient() ) === 1 )
+			)
+		{
+			logMsg("IP Restriction is ON: Access Allowed");
+		} else {
+			header('HTTP/1.0 403 Forbidden');
+    		die('Access Forbidden');
+		}
+	}
+}
+
+/* *********************************************************************************************
+ * apiCallAuthorized()         - added 2018-11-06 chadkluck
+ *
+ * If calls to this application's api service is restricted by IP or apikey, then make sure
+ * they are present.
+ * The api access IP is set in the config.ini.php file under [security] api-restrict-access-ip
+ * and api-key
+ *
+ */
+
+function authorizeAPIcall() {
+
+	$threshold = 0;
+	$status = 0;
+
+	$key = getCfg("security")['api-key'];
+	$ip = getCfg("security")['api-restrict-access-ip'];
+
+	if ( $key !== "" ) {
+		$threshold++;
+		if ($key === getParameter("apikey")) {
+			$status++;
+		}
+	}
+
+	if ( $ip !== "" ) {
+		$threshold++;
+		if ( preg_match( $ip, getRequestClient() ) === 1 ) {
+			$status++;
+		}
+	}
+
+	// did not meet criteria
+	if ( $status !== $threshold ) {
+		header('HTTP/1.0 403 Forbidden');
+    	die('Access Forbidden');
+	}
 }
 
 /* **************************************************************************
@@ -375,7 +617,16 @@ function getRequestHost() { //$_SERVER['REQUEST_URI'] $_SERVER['HTTP_HOST'] $_SE
 }
 
 
+// the origin is not an approved origin
+function returnNotApprovedOrigin() {
 
+	httpReturnHeader(getCacheExpire("api"), getRequestOrigin(), "application/json");
+	$error = array();
+	$error['error']['code'] = "400";
+	$error['error']['message'] = getRequestOrigin()." not an allowed origin";
+	$error['error']['status'] = "";
+	echo json_encode($error);
+}
 
 /* **************************************************************************
  *  SEND PAGE HEADERS
@@ -402,7 +653,7 @@ function httpReturnHeader($cache, $origin = "", $contentType = "text/html; chars
  *  FORCE HTTPS - updated 2018-10-11
  *
  *  If the page wasn't requested via https, redirect to https
- *  
+ *
  */
 
 function requireSSL() {

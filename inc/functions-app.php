@@ -56,8 +56,8 @@
     REQUIRED FUNCTIONS
 	********************************************************************************************
 
-	These functions are required for use with inc/lib/php-project-framework
-	Add your own code to them to make them usable for you
+	These functions are required for use with inc/lib/php-project-framework but are up to you
+	to develop and extend for your needs
 
 	********************************************************************************************
 */
@@ -65,10 +65,18 @@
 /* **************************************************************************
  *  userIsAdmin()
  *
- *  leave as is if your application does not require admin privileges/login
  */
 
 function userIsAdmin() {
+	return false;
+}
+
+/* **************************************************************************
+ *  userIsUser()
+ *
+ */
+
+function userIsUser() {
 	return false;
 }
 
