@@ -91,6 +91,7 @@ function getCfg( $index = NULL ) {
 
 // do not modify without good reason
 function getPathIncApp() { return ( getCfg("paths")["inc_app"] ? getCfg("paths")["inc_app"] . "inc/"     : __DIR__."/../inc/" ) ; }
+function getPathCustom() { return ( getCfg("paths")["inc_app"] ? getCfg("paths")["inc_app"] . "custom/"  : __DIR__."/../custom/" ) ; }
 function getPathIncLib() { return ( getCfg("paths")["inc_lib"] ? getCfg("paths")["inc_lib"] . "inc/lib/" : __DIR__."/../inc/lib/" ) ; }
 function getPathAssets() { return ( getCfg("paths")["assets"]  ? getCfg("paths")["assets"]  . "assets/"  : "assets/" ) ; }
 
@@ -120,6 +121,6 @@ require_once( getPathIncApp()."inc-app.php" ); // this app''s initialization
 	============================================================================================
 */
 
-require_once( "functions-custom.php" );
+require_once( getPathCustom()."functions-custom.php" ); // this app''s custom functions
 
 ?>

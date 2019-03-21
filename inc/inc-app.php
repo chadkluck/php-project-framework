@@ -20,7 +20,7 @@
 		This is function template file from the PHP PROJECT FRAMEWORK library.
 		Visit github.com/chadkluck/php-project-framework page for more information.
 		FRAMEWORK FILE: inc/inc-app.php
-		FRAMEWORK FILE VERSION: 2018-08-30
+		FRAMEWORK FILE VERSION: 2019-02-16
 
 	********************************************************************************************
 	============================================================================================
@@ -32,12 +32,9 @@
 	********************************************************************************************
 */
 
-// require an ssl connection (if required as set in config). If request was sent via http, redirect to https
-requireSSL(); // note that even with a redirect, the initial request was sent insecurly
-			  // also note that this is primarily for the admin tools section, module/getlink, and module/display
-			  // It uses a redirect which does not resubmit POST data
-			  // Do not rely on the redirect, always link to https. This is only optimal when a user is typing links directly
-
+// check site-level access - is https required? is access restricted by ip?
+// this is for site level access, individual pages/zones are set by zone-restrict-allow-ip[zone-name] in config and restrictedZone("zone-name") added to respective pages
+checkSiteLevelAccess(); 
 
 // Initialize the $app variable
 $app = array();
