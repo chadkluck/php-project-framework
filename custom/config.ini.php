@@ -44,7 +44,7 @@
 allow-origin = "/^https?:\/\/(?:(?:[a-z0-9]+\.)*63klabs\.com)$/i"
 ; FORMAT:      Regular Expression (eg "/foo/i")
 ; DESCRIPTION: What websites should be allowed to embed these pages? Typical for CORS for pulling the page into an iframe or javascripts accessing the api. Leave blank if you want to allow any website
-; RECOMMENDED: "/^^https?:\/\/(?:(?:[a-z0-9]+\.)*yourdomain\.com)/i"
+; RECOMMENDED: "/^https?:\/\/(?:(?:[a-z0-9]+\.)*yourdomain\.com)$/i"
 ; DEFAULT:     ""
 
 
