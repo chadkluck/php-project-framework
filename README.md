@@ -16,6 +16,7 @@ There are 3 template areas. Some are a library, some are used by you, the develo
 
 The files are heavily commented to walk you through so visit them in this order:
 
-1. custom/config.ini.php - you can store config variables here - these won't change during execution and you can expect your end user to update them for their own installation. Access these variables by calling getConfig(sectionName)[variablename] All other config variables contained within are commented. Feel free to add your own as neccessary for your application.
-2. index.php and api.php - duplicate, move, and rename as needed. These are templates for the html and api pages you create for your application.
-3. inc/app-functions.php - add the functions for your application
+1. Copy/rename the "\_custom" directory to "custom" (This will prevent overwrites from the repository) It is recommended that if you plan on releasing your application in it's own git repository that you rename the "custom" directory to "\_custom" so you don't overwrite your users' data.
+2. custom/config.ini.php - you can store config variables here - these won't change during execution and you can expect your end user to update them for their own installation. Access these variables by calling getConfig(sectionName)[variablename] All other config variables contained within are commented. Feel free to add your own as neccessary for your application.
+3. index.php and api.php - duplicate, move, and rename as needed. These are templates for the html and api pages you create for your application.
+4. inc/app-functions.php - add the functions for your application
