@@ -583,16 +583,39 @@ function getRequestHost() { //$_SERVER['REQUEST_URI'] $_SERVER['HTTP_HOST'] $_SE
 	return getApp('request')['host'];
 }
 
+// display json data
+function displayJSON($json = array() ) {
+	httpReturnHeader(getCacheExpire("api"), getRequestOrigin(), "application/json");
+	echo json_encode($json);
+}
 
 // the origin is not an approved origin
-function returnNotApprovedOrigin() {
+function displayJSONnotApprovedOrigin() {
+	displayJSONerror("400", getRequestOrigin()." not an allowed origin","");
+}
 
-	httpReturnHeader(getCacheExpire("api"), getRequestOrigin(), "application/json");
+// return an error in JSON format
+function displayJSONerror($code, $message, $status="") {
+    
 	$error = array();
-	$error['error']['code'] = "400";
-	$error['error']['message'] = getRequestOrigin()." not an allowed origin";
-	$error['error']['status'] = "";
-	echo json_encode($error);
+	$error['error']['code'] = $code;
+	$error['error']['message'] = $message;
+	$error['error']['status'] = $status;
+
+	displayJSON($error);	
+}
+
+// return debug info if debug is on
+function displayHTMLdebugInfo($json) {
+    echo "<h3>JSON RAW</h3>";
+    echo "<p>";
+    echo json_encode($json);
+    echo "</p>";
+    echo "<h3>JSON FORMATTED</h3>";
+    echo "<pre>";
+    print_r($json);
+    echo "</pre>";
+    appExecutionEnd();
 }
 
 
