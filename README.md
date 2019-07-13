@@ -40,7 +40,7 @@ The files are heavily commented to walk you through so visit them in this order:
 
 # Need inspiration?
 
-The following repositories were built on this framework:
+The following repositories were built using this framework:
 
 1. https://github.com/chadkluck/8ball-api
 2. https://github.com/USTLibraries/exlibris-api-example
