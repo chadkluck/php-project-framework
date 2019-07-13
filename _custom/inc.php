@@ -57,12 +57,9 @@ error_reporting(E_ALL); // comment out when in production
     CONFIG VARIABLE - Now compatible with PHP 7.x and above only
 	********************************************************************************************
 
-		Since PHP 5.x is reaching end of life the template will use 7.x methods and not
-		be backwards compatible. This will simplify the setup process.
-
-		7.x allows arrays to be declared as CONSTANTS so we will get rid of the 5.x ways of doing
-		things. If you, for what ever reason, need the 5.x way of doing things then refer to an
-		older repository.
+		We call in the config.ini.php file which is in ini format and put all the settings into
+		a constant variable named CFG. However we never request CFG directly in code, we always
+		use the function defined next: getCfg()
 
 	============================================================================================
 */
@@ -91,12 +88,12 @@ function getCfg( $index = NULL ) {
 
 // do not modify without good reason
 function getPathIncApp() { return ( getCfg("paths")["inc_app"] ? getCfg("paths")["inc_app"] . "inc/"     : __DIR__."/../inc/" ) ; }
-function getPathCustom() { return ( getCfg("paths")["inc_app"] ? getCfg("paths")["inc_app"] . "custom/"  : __DIR__."/../custom/" ) ; }
+function getPathCustom() { return ( getCfg("paths")["custom"] ? getCfg("paths")["custom"] . "custom/"  : __DIR__."/../custom/" ) ; }
 function getPathIncLib() { return ( getCfg("paths")["inc_lib"] ? getCfg("paths")["inc_lib"] . "inc/lib/" : __DIR__."/../inc/lib/" ) ; }
 function getPathAssets() { return ( getCfg("paths")["assets"]  ? getCfg("paths")["assets"]  . "assets/"  : "assets/" ) ; }
 
 // do not modify without good reason
-$inc_config_version = "1.2"; // in the unlikely event this file needs to be manually updated from the repository
+$inc_config_version = "1.3"; // in the unlikely event this file needs to be manually updated from the repository
 								// this will let you know if you need to replace this file with a new version
 								// If you do, be sure to copy over your modifications!
 
@@ -105,14 +102,13 @@ require_once( getPathIncLib()."php-project-framework/functions.php" ); // php-pr
 require_once( getPathIncApp()."functions-app.php" ); // this app''s functions
 require_once( getPathIncApp()."inc-app.php" ); // this app''s initialization
 
-
 /*  ============================================================================================
     ********************************************************************************************
     CUSTOM VARS AND FUNCTIONS
 	********************************************************************************************
 
-		functions-custom.php is where the end user (the one who installed the application)
-		can place custom code and functions to extend the application. The application developer
+		functions-custom.php is where the end user (the individual who installed your application)
+		can place custom code and functions to extend the application. You, the application developer
 		can create template functions and place them in functions-custom.php for the installer
 		to modify without worry of being overwritten during updates.
 

@@ -41,7 +41,7 @@
 ; These are values that configure the way requests are received and responded to
 
 
-allow-origin = "/^https?:\/\/(?:(?:[a-z0-9]+\.)*63klabs\.com)$/i"
+allow-origin = ""
 ; FORMAT:      Regular Expression (eg "/foo/i")
 ; DESCRIPTION: What websites should be allowed to embed these pages? Typical for CORS for pulling the page into an iframe or javascripts accessing the api. Leave blank if you want to allow any website
 ; RECOMMENDED: "/^https?:\/\/(?:(?:[a-z0-9]+\.)*yourdomain\.com)$/i"
@@ -229,37 +229,107 @@ ucede = "[[short descriptive name]],[[some text for notes describing what it is 
 ; =======================================================================================
 ; FILE PATHS AND STORAGE
 
+; Install the application first, get it working in default directories, then move directories around!
+; Just skip over changing the paths around until you have an understanding.
+
 ; Where are the scripts and assets stored?
-; For security purposes it is beneficial to move the inc/ and assets/ folders outside
+; For security purposes it is beneficial to move the php function and include files outside
 ; of the application''s public web directory.
 ; It is recommended you get the application installed and running first before messing with
 ; these.
 ;
-; RECOMENDATION: Get the app working first, then move the inc/ directory to a location under
-; 	the public web directory (typically /home/yourspace/resources/inc where /home/yourspace/www is your web directory)
-;   Then update this file with the location and upload it to test it out.
+; If you question why you''d want to do complicated forms of this, then you probably don''t have a use case
+;
+; RECOMENDATION: Get the app working first, then move the inc/ directory to a location outside
+; 	the public web directory. Then update this file with the location and upload it to test it out.
+;   For example, if your public web directory is /home/user/www or /home/user/public (where all publicly accessible content is stored,
+;   then create a directory such as /home/user/private/ to store scripts that shouldn''t be accessible on the public web
 ;   For now inc_app and inc_lib should point to the same location.
 ;   If you want to move or point to a central lib once you get the app working then update inc_lib
 ;   Finally, as long as inc_app and inc_lib are working, if you want to store your assets elsewhere (Amazon S3 bucket for example)
 ;   in order to separate the application''s code from the content. Then point to it.
+;
+; Default Installation:
+; /home/user/public/
+;                |- custom/
+;                |- assets/
+;                |- inc/
+;                |  |- lib/
+;                |- allpublicfilesandirectories
+;
+; Possible installation
+; /home/user/public/
+;                |- app-1/
+;                |    |- custom/ (only inc.php and custom.ini.php, functions-custom.php moved to private)
+;                |    |- allpublicfilesanddirectoriesforapp-1
+;                |- app-2/
+;                |    |- custom/ (only inc.php and custom.ini.php, functions-custom.php moved to private)
+;                |    |- allpublicfilesanddirectoriesforapp-2
+;                |- app-3/
+;                |    |- custom/ (only inc.php and custom.ini.php, functions-custom.php moved to private)
+;                |    |- allpublicfilesanddirectoriesforapp-3
+;                |- allpublicfilesandirectories
+; /home/user/private/
+;                |- libraries/ (used by app-1, app-2, and app-3)
+;                |- app-1/
+;                |    |- custom/ (functions-custom.php and all custom files for app-1)
+;                |    |- inc/
+;                |- app-2/
+;                |    |- custom/ (functions-custom.php and all custom files for app-2)
+;                |    |- inc/
+;                |- app-3/
+;                |    |- custom/ (functions-custom.php and all custom files for app-3)
+;                |    |- inc/
+;
+; Another Possible (complex) installation where 1 app has 3 custom settings (such as a microsite app running 3 micro sites
+; /home/user/public/
+;                |- microsite-1/
+;                |    |- custom/ (only inc.php and custom.ini.php, functions-custom.php moved to private)
+;                |    |- allpublicfilesanddirectoriesforapp-1
+;                |- microsite-2/
+;                |    |- custom/ (only inc.php and custom.ini.php, functions-custom.php moved to private)
+;                |    |- allpublicfilesanddirectoriesforapp-1
+;                |- microsite-3/
+;                |    |- custom/ (only inc.php and custom.ini.php, functions-custom.php moved to private)
+;                |    |- allpublicfilesanddirectoriesforapp-1
+;                |- allpublicfilesandirectories
+; /home/user/private/
+;                |- libraries/ (used by microsite and other apps)
+;                |- inc-microsite-app/
+;                |- inc-someother-app/
+;                |- custom-site-1/ (functions-custom.php and all custom files for microsite 1)
+;                |- custom-site-2/ (functions-custom.php and all custom files for microsite 2)
+;                |- custom-site-3/ (functions-custom.php and all custom files for microsite 3)
+;                |- custom-someother/ (functions-custom.php and all custom files for some other app)
 
 
 inc_app = ""
 ; FORMAT:      string
-; DESCRIPTION: Where the "inc/" directory is located (without inc/ in the string)
-;              "" will return "inc/" (default location within app folder)
-;              "/home/asdf/" will return "/home/asdf/inc/" (such as a server path if moved below public web directory)
-;			   "/home/asdf/resources/digital-display/" will return "/home/asdf/resources/digital-display/inc" (server path below public web directory)
+; DESCRIPTION: Where contents of default "inc/" directory are located
+;              "" will return "inc/" (default location within install folder)
+; EXAMPLE:     "/home/user/private/inc/" (server path outside the public web directory but retains the default inc label)
+;              "/home/user/private/appname/" (server path outside the public web directory but inc has been renamed to appname)
 ; DEFAULT:     "" to use default inc/ directory within the application folder
 
 
 inc_lib = ""
 ; FORMAT:      string
-; DESCRIPTION: Where the "inc/lib/" directory is located (without inc/lib/ in the string)
-;              "" will return "inc/lib/" (default location within app folder)
-;              "/home/asdf/" will return "/home/asdf/inc/lib/" (such as a server path if moved below public web directory)
-;			   "/home/asdf/resources/shared/" will return "/home/asdf/resources/shared/inc/lib/" (server path below public web directory where multiple apps share a library - in case you wish to maintain a single common library)
+; DESCRIPTION: Where contents of default "inc/lib/" directory are located
+;              This is useful if you develop multiple applications based on php-project-framework using many of the same libraries
+;              For example five custom apps (all pointing to their own app''s /inc directories) that all use the /php-project-framework library
+;              "" will return "inc/lib/" or, if inc_app is set above, "[inc_app/]lib/" (default location within installed inc folder)
+; EXAMPLE:     "/home/user/private/libraries/" (server path outside public web directory)
 ; DEFAULT:     "" to use default inc/lib/ directory within the application folder
+
+
+custom = ""
+; FORMAT:      string
+; DESCRIPTION: Where contents of default "custom/" directory is located. config.ini.php and inc.php will need to stay in the public directory but everything else may be moved out of public view
+;              "" will return "custom/" (default location within install folder)
+; EXAMPLE:     "/home/user/private/custom/"
+;              "/home/user/private/custom-microsite-1/"
+; NOTE:        config.ini.php and inc.php will need to stay in the public directory. functions-custom.php and any added files may be moved here
+; DEFAULT:     "" to use default custom/ directory within the application folder
 
 
 assets = ""
