@@ -14,14 +14,8 @@ $myParam = getParameter("myparam"); // This is an example of accessing get/post 
 
 	<body>
 
-		<!-- an example of including a script from your Application Include Path -->
-		<?php include getPathIncApp() . "template/body.php"; ?>
-
-		<!-- an example of including a script from one of the libraries in your application -->
-		<?php require_once getPathIncApp() . "somelib/display.php"; ?>
-
-		<!-- an example of including a script from your web assets -->
-		<script src="<?php echo getPathAssets(); ?>js/main.js"></script>
+		<h1>Hello World</h1>
+		<p><a href="api.php">Check API</a></p>
 
 	</body>
 </html>

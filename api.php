@@ -18,7 +18,11 @@ function generateResponse() {
 	$json = array();
 
 	// add items to the json array
-	// $json["item"] = "Hello World";
+	$json['title'] = "Example"; // create an array to be structured how you want the JSON data to be structured
+	$json['your-ip'] = getRequestClient();
+	$json['item'][] = "Hello World"; 
+	$json['item'][] = "What's New?";
+	$json['count'] = count($json['item']);
 
 	return $json;
 }
@@ -33,24 +37,12 @@ if ( isApprovedOrigin() ) {
 	$json = generateResponse();
 
 	if(!debugOn()) {
-
-		httpReturnHeader(getCacheExpire("api"), getRequestOrigin(), "application/json");
-		echo json_encode($json);
-
+		displayJSON($json);
 	} else {
-		echo "<h3>JSON RAW</h3>";
-		echo "<p>";
-		echo json_encode($json);
-		echo "</p>";
-		echo "<h3>JSON FORMATTED</h3>";
-		echo "<pre>";
-		print_r($json);
-		echo "</pre>";
-		appExecutionEnd();
+		displayHTMLdebugInfo($json);
 	}
-
 } else {
-	returnNotApprovedOrigin();
+    displayJSONnotApprovedOrigin();
 }
 
 ?>
