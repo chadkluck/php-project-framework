@@ -125,7 +125,7 @@ ip-restrict-allow-user = 0
 ; DEFAULT:     0
 
 
-api-restrict-access-allow-ip = ""
+api-restrict-allow-ip = ""
 ; FORMAT:      Regular Expression e.g. "/^10\.9\.104\.5/" (for IP 10.9.104.5)
 ; DESCRIPTION: If this application will be accessed by other servers (not client-side scripts such as JavaScript running in the browser)
 ;			   You may restrict access by requiring the requesting server be from a designated ip address or range of ip addresses
