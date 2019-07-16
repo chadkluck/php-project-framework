@@ -823,6 +823,9 @@ function restrictByIpForZone($zone = 0) {
  * they are present.
  * The api access IP is set in the config.ini.php file under [security] api-restrict-access-by-ip
  * The api access key is set in the config.ini.php file under [secrets] api-restrict-access-by-key
+ * The default behavior when requests are unauthorized is to throw a request error 403. Otherwise passing
+ * false in the parameter will cause it to return false if not authorized. Useful if you want a different
+ * course of action rather than a 403.
  *
  */
 
