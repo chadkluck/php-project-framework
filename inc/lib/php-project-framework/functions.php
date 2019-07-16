@@ -396,7 +396,7 @@ function getSecrets() {
 
 function followSecrets($element) {
 	$innerSecrets = array();
-	
+
 	foreach ($element as $key => $value) {
 		if ( is_array($value) ) {
 			$innerSecrets = array_merge( $innerSecrets, followSecrets($value) );
@@ -404,7 +404,7 @@ function followSecrets($element) {
 			$innerSecrets[] = $value;
 		}
 	}
-	
+
 	return $innerSecrets;
 }
 
@@ -596,13 +596,13 @@ function displayJSONnotApprovedOrigin() {
 
 // return an error in JSON format
 function displayJSONerror($code, $message, $status="") {
-    
+
 	$error = array();
 	$error['error']['code'] = $code;
 	$error['error']['message'] = $message;
 	$error['error']['status'] = $status;
 
-	displayJSON($error);	
+	displayJSON($error);
 }
 
 // return debug info if debug is on
@@ -648,9 +648,9 @@ function httpReturnHeader($cache, $origin = "", $contentType = "text/html; chars
  *
  *  1. Checks if require_ssl is set to 1 in config.ini.php
  *  2. Checks if ip-restrict-allow-ip is set in config.ini.php
- * 
+ *
  *  Since this is called in inc/inc-app.php it is application-wide. Granular control of ip restrictions may
- *  be used by using zone-restrict-allow-ip[zone-name] in config.ini.php and calling restrictByIpForZone("zone-name") 
+ *  be used by using zone-restrict-allow-ip[zone-name] in config.ini.php and calling restrictByIpForZone("zone-name")
  *  at the top of restricted pages
  *  api-restrict-access-allow-ip may also be used to restrict all apis
  *
@@ -673,9 +673,9 @@ function checkSiteLevelAccess() {
  *  Redirect to https if it is http and https is required. Called by checkSiteLevelAccess()
  *
  *  This is set in the config.ini.php file under require_ssl
- *  Note that even with a redirect, the initial request was sent insecurely. It also uses a redirect which does not resubmit POST data, 
+ *  Note that even with a redirect, the initial request was sent insecurely. It also uses a redirect which does not resubmit POST data,
  *  it is for a user typing and not form or post data. Do not rely on the redirect, always link to https, or set up your server or
- *  .htaccess to require SSL. 
+ *  .htaccess to require SSL.
  *  This is only optimal when a user is typing links
  *
  *  If this application sits behind a load balancer, have the load balancer server admin set up
@@ -724,7 +724,7 @@ function requireSSL() {
  *  This is application wide. (API and pages) as it is called on all requests. If a more granular
  *  approach is warranted see authorizeAPIcall() for just locking down APIs or segmenting each
  *  API or page into it's own zone by using restrictByIpForZone()
- *  
+ *
  *  ADDED 2018-10-31 chadkluck
  *
  *  @see checkSiteLevelAccess()
@@ -752,31 +752,31 @@ function restrictByIp() {
 
 
 /* *********************************************************************************************
- *  restrictByIpForZone($zone)        
+ *  restrictByIpForZone($zone)
  *
- *  If the page is restricted by IP then we check access here. If the IP is not allowed then the 
+ *  If the page is restricted by IP then we check access here. If the IP is not allowed then the
  *  application dies.
  *
- *  The IP is set in the config.ini.php file under [security] zone-restrict-allow-ip where multiple 
+ *  The IP is set in the config.ini.php file under [security] zone-restrict-allow-ip where multiple
  *  zones and IP ranges may be defined.
  *
  *  For example you may have an intranet zone (accessible only via an internal network) and a secure
  *  zone (accessible only via IPs in your admin office).
- * 
- *  Unlike restrcitByIp (which locks down the whole application) this can be placed on individual 
+ *
+ *  Unlike restrcitByIp (which locks down the whole application) this can be placed on individual
  *  pages. Also unlike restrictByIp there is no override by admins or users.
  *
  *  ADDED: 2019-01-23 chadkluck
  *
  *  @see restrictByIp()
- * 
+ *
  *  @param string/int $zone Zone id that matches key in associatve array defined in config.ini.php
  */
 
 function restrictByIpForZone($zone = 0) {
-	
+
 	$zones = array();
-	
+
 	// check to see if zone-restrict-allow-ip exists,
 	if( isset(getCfg('security')['zone-restrict-allow-ip']) ) {
 		$zones = getCfg('security')['zone-restrict-allow-ip'];
@@ -784,7 +784,7 @@ function restrictByIpForZone($zone = 0) {
 
 	// check to see if there are zones
 	if( count($zones) ) {
-		
+
 		// check to see if the requested zone exists
 		if ( array_key_exists( $zone, $zones ) ) {
 
@@ -803,12 +803,12 @@ function restrictByIpForZone($zone = 0) {
 				// zone is defined but not currently restricted
 				logMsg("Zone IP Restriction is OFF for '".$zone."': Access Allowed");
 			}
-			
+
 		} else {
 			header('HTTP/1.0 403 Forbidden');
 			die('Access Forbidden - Zone Undefined'); // restrictByIpForZone() was put in by a developer but points to a zone never defined in config.ini.php
 		}
-		
+
 	} else {
 		header('HTTP/1.0 403 Forbidden');
 		die('Access Forbidden - No Zones Defined'); // restrictByIpForZone() was put in by a developer but zones are never defined in config.ini.php
@@ -826,43 +826,63 @@ function restrictByIpForZone($zone = 0) {
  *
  */
 
-function authorizeAPIcall() {
+function authorizeAPIcall($die = true) {
 
-	$threshold = 0;
-	$status = 0;
-	$r = false;
+    /*
+    This uses threshold logic.
 
-	$keys = (isset(getCfg("secrets")['api-restrict-access-allow-key'])) ? getCfg("secrets")['api-restrict-access-allow-key'] : array();
-	$ip = getCfg("security")['api-restrict-access-allow-ip'];
+    Each requirement increases the threshold that must be met.
+
+    threshold starts at 0, so does the status.
+
+    If no IP or key requirements, then threshold is 0 and status is 0 (0 === 0) and it returns true
+    If ip requirement, then threshold is increased by 1 and the ip is checked. If met status is increased by 1
+    If key requirement, then threshold is increased by 1 and the key is checked. If met status is increased by 1
+
+    In the end, the status must equal the threshold set, otherwise it is not authorized.
+    */
+
+	$threshold = 0; // number of requirements we must meet
+	$status = 0; // number of requirements we met
+	$r = false; // return value
+
+    // gather these settings to make them easy to process
+	$keys = (isset(getCfg("secrets")['api-restrict-allow-key'])) ? getCfg("secrets")['api-restrict-allow-key'] : array();
+	$ip = getCfg("security")['api-restrict-allow-ip'];
 
 
+    // see if there are keys set. If so increase the threshold and evaluate the key
 	if( count($keys) > 0 ) {
-		$threshold++;
+		$threshold++; // increase the number of requirements we must meet
 		$apikey = getParameter("apikey", "GET");
-		if ($apikey) { 
+		if ($apikey) {
 			$id = explode("-", $apikey)[0];
 			if ( array_key_exists($id, $keys) && $keys[$id] === $apikey ) {
-				$status++;
+				$status++; // we found a matching key - this requirement is met
 			}
 		}
 	}
-	
 
+
+    // see if there is an IP requirement. If so, increase the threshold and evaluate the IP
 	if ( $ip !== "" ) {
-		$threshold++;
+		$threshold++; // increase the number of requirements we must meet
 		if ( preg_match( $ip, getRequestClient() ) === 1 ) {
-			$status++;
+			$status++; // The IP is a match - this requirement is met
 		}
 	}
 
-	// did not meet criteria
-	if ( $status !== $threshold ) {
-		header('HTTP/1.0 403 Forbidden');
-			die('Access Forbidden');
-	} else {
+	// Check to see if we met the requirement threshold
+	if ( $status === $threshold ) {
 		$r = true;
+	} else {
+        logMsg("No Key/Ip Match", $keys);
+        if ($die) {
+            header('HTTP/1.0 403 Forbidden');
+			die('Access Forbidden');
+        }
 	}
-	
+
 	return $r;
 }
 
@@ -928,26 +948,26 @@ function setSessionParam( $pName, $value ) {
 /** ****************************************************************************************
  *  generateJSONrequest($endpoint [,$parameters])
  *
- *	When passed an endpoint (domain and url ex: https://example.com/api/v1/stores) with or 
+ *	When passed an endpoint (domain and url ex: https://example.com/api/v1/stores) with or
  *  without parameters it will send it as a formulated URL to getDataFromJSON() and return
  *  the result.
  *
  *  @see getDataFromJSON()
  *  @param string $endpoint The api endpoint containing the domain and uri
  *  @param array $parameters Parameters to be passed as key and values in a query string
- *  @return array JSON data from the request 
+ *  @return array JSON data from the request
  */
 function generateJSONrequest($endpoint = "", $parameters = array()) {
-	
+
 	$results = array();
-	
+
 	if($endpoint) {
-		
+
 		$query = "";
-		
+
 		// add each parameter as a key and value to the query string
 		foreach ($parameters as $key => $value) {
-			
+
 			// check to see if the value contains a nested array
 			if (is_array($value)) {
 				// param contains an array so we format like: &ids[]=45&ids[]=57&ids[]=87
@@ -959,19 +979,19 @@ function generateJSONrequest($endpoint = "", $parameters = array()) {
 				$query .= "&".$key."=".urlencode($value);
 			}
 		}
-		
+
 		// remove the first & in the query
 		$query = ltrim($query,"&");
-		
+
 		// formulate request url. If there is a query string, add it
 		$url = ($query !== "") ? $endpoint."?".$query : $endpoint;
-		
+
 		logMsg("Generated request URL: ".$url, $parameters);
-		
+
 		$results = getDataFromJSON($url);
-		
+
 	}
-	
+
 	return $results;
 }
 
@@ -1122,34 +1142,34 @@ function boolParamIsEqualTo( $param, $value, $method = "") {
 
 /* *********************************************************************************************
  *	util_decodeCfgStrData( $data )
- *	
- * 	Sometimes you need to nest arrays in the config file beyond what the syntax allows and there 
+ *
+ * 	Sometimes you need to nest arrays in the config file beyond what the syntax allows and there
  *  are various ways of accomplishing this.
- * 
+ *
  *  First method is to use comma deliminated double brackets containing data:
  *  variableName = "[[some-data]],[[more-data]],[[even more \"data\" in the string]]"
- * 
+ *
  *  Second method is to store json data:
  *  variableName = "{ \"id\": \"24601\", \"fname\": \"Jean\", \"lname\": \"Valjean\" }"
- * 
+ *
  *  Another json example:
  *  variableName = "[\"some-data\",\"more-data\",\"even more \\\"data\\\" in the string\"]
- * 
+ *
  *  Another json example (a multidimentional array not to be confused with a bracket):
  *  variableName = "[[1,2,3],[4,5,6]]"
- * 
+ *
  *  Third method is to store comma delimited data:
  *  variableName = "the,a,an"
- * 
+ *
  *  The method used depends on readability. As you can see, the json data requires extensive
  *  use of escaped double quotes, even doublely so when quotes are in the data.
- * 
+ *
  *  This will take any of the three (as long as they aren't too complicated) and parse it out into an array.
- * 
+ *
  *  NOTE: This is "on-demand" meaning that it is not automatically parsed out when it is ingested
  *  into the CFG variable. This will need to be used on the data in the CFG variable when it is
  *  needed.
- * 
+ *
  *  @param string $data The string to convert to an array
  */
 
@@ -1187,21 +1207,21 @@ function util_decodeCfgStrData( $data ) {
  /* *********************************************************************************************
  *	getCustomHTML( $data )
  *
- *  For HTML we can either bring in a file from the custom folder on the server, or use 
+ *  For HTML we can either bring in a file from the custom folder on the server, or use
  *  the html text already in the variable
  *  Essentially we check to see if we are using a file, if not we just send back the code
  *  sent to us
  *
  *  [[FILE:blah-blah.html]]
- * 
+ *
  *  @param string $data The string to convert to an array
  */
 
 function getCustomHTML($data) {
 	$html = "";
-	
+
 	$regex = "/(?<=^\[\[FILE:)[A-Za-z0-9_-]+\.html(?=\]\]$)/"; // positive, non capturing lookahead and behind strips "[[FILE:" and "]]" in one shot
-	
+
 	// if [[FILE:somefile.html]] then read in the file
 	if ( preg_match($regex, $data, $matches) === 1 ) { // if a match found (===1) then put the match in $matches array
 		$filename = array_pop($matches); // matches is an array with (presumably) 1 element, but we're just cautious
@@ -1211,11 +1231,11 @@ function getCustomHTML($data) {
 		} catch (Exception $e) {
 			logMsg($e);
 		}
-		
+
 	} else { // it's just plain html text
 		$html = $data;
 	}
-	
+
 	return $html;
 }
 
