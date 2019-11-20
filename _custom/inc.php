@@ -1,122 +1,85 @@
 <?php
-/*  ============================================================================================
-    ********************************************************************************************
-	[NAME OF APPLICATION]: Application Configuration Initialization
-    ********************************************************************************************
+/* 
+	===========================================================================
+	***************************************************************************
+	PHP PROJECT FRAMEWORK INITIALIZATION
+	***************************************************************************
 
-	[your name/company name] ([your website])
-	[github url for your application if applicable]
+	This script file handles how errors should be displayed and where the 
+	config.ini.php and init.php files are located before the application
+	has a chance to init (in case they were moved outide of the app's path).
 
-	********************************************************************************************
-
-	FILE LAST MODIFIED: YYYY-MM-DD - [dev name]
-
-	PURPOSE: Brings in the config file
-
-	********************************************************************************************
-
-	********************************************************************************************
-	********************************************************************************************
-
-		This is function template file from the PHP PROJECT FRAMEWORK library.
-		Visit github.com/chadkluck/php-project-framework page for more information.
-		FRAMEWORK FILE: custom/inc.php
-		FRAMEWORK FILE VERSION: 2018-10-30
-
-	********************************************************************************************
-	============================================================================================
+	***************************************************************************
+	===========================================================================
 */
 
-/*  ============================================================================================
-	********************************************************************************************
+/*
+	***************************************************************************
+	DISPLAY ERRORS
+	---------------------------------------------------------------------------
 
-	THE ONLY THING THAT IS CUSTOMIZABLE IN THIS FILE IS ERROR REPORTING!
-	Do not update anything else!
+	Comment out these two lines when in production! It is best to leave these
+	commented out and only uncomment when debugging. These two lines will
+	display errors to visitors which is bad practice. Since they are called
+	before debug mode can be verified and enabled, they function without
+	reguards to debug settings.
 
-	********************************************************************************************
-	============================================================================================
+	While developing and troubleshooting you can set error settings here.
+
+	Again, NOTE! debug=true has no effect on these during init! So if you
+	have errors during init and the below is set to not display errors, then
+	debug param will have no effect! Debug is only for application runtime,
+	not init! Once the application is loaded after init, then and only then
+	will debug turn on error reporting.
+
+	***************************************************************************
 */
 
-/*  ============================================================================================
-    ********************************************************************************************
-    ERROR REPORTING - CUSTOMIZABLE
-	********************************************************************************************
-
-		These 2 lines should be commented out after installation in a production environment
-
-		This is the only customizable part of this file.
-
-	============================================================================================
+/* 	
+	PRODUCTION - No Error Reporting
+	You can leave these two lines uncommented and only uncomment/comment out 
+	the lines in the DEVELOPMENT AND DEBUG section when in production. 
 */
+ini_set('display_errors', '0'); // Do not display errors step 1
+error_reporting(0); // Do not display errors step 2
 
+/*	
+	DEVELOPMENT AND DEBUG - Turn on Error Reporting
+	Uncomment these two lines when in development/troubleshooting, comment out 
+	when in production.
+*/
 ini_set('display_errors',1); // comment out when in production
+ini_set('display_startup_errors', 1); // comment out when in production
 error_reporting(E_ALL); // comment out when in production
 
-/*  ============================================================================================
-    ********************************************************************************************
-    CONFIG VARIABLE - Now compatible with PHP 7.x and above only
-	********************************************************************************************
+/*
+	***************************************************************************
+	CONFIG and INITIONALIZATION FILES
+	---------------------------------------------------------------------------
 
-		We call in the config.ini.php file which is in ini format and put all the settings into
-		a constant variable named CFG. However we never request CFG directly in code, we always
-		use the function defined next: getCfg()
+	init.php calls in the config.ini.php file and all the additional framework
+	includes necessary to run the application. Since the config file has not
+	yet been loaded the locations are only assumed by the application.
 
-	============================================================================================
+	If the application's /custom and /inc directories were moved outside of
+	the applications public web install directory, these need to be updated
+	below.
+
+	Set the location of the config and project-framework files to where they 
+	were moved. If using the default location (/custom and /inc/lib) then there
+	is no need to set.
+
+	----------------------------------------------------------------------------
+
+	App specific includes that extend the framework should be included in
+	inc/inc-app.php, not here.
+
+	***************************************************************************
 */
+// Replace these with the exact server path to these files
+$config_ini_file = __DIR__."/config.ini.php"; // default = __DIR__."/config.ini.php"; // (/custom/config.ini.php)
+$php_project_framework_dir = __DIR__."/../inc/lib/php-project-framework/init.php"; // default = __DIR__."/../inc/lib/php-project-framework/init.php"
 
-// calls in the config.ini.php file and places it in the CONSTANT variable CFG
-define('CFG', parse_ini_file("config.ini.php", true, INI_SCANNER_NORMAL ));
-
-// getCfg() is the function used to access the constant variable CFG
-function getCfg( $index = NULL ) {
-	return ( $index ? (isset( CFG[$index] ) ? CFG[$index] : NULL ) : CFG );
-}
-
-/*  ============================================================================================
-    ********************************************************************************************
-    APP LEVEL INCLUDES - DO NOT MODIFY
-	********************************************************************************************
-
-		Do not modify this part, it is the engine that brings in files and include paths.
-
-		However, if you were to modify it, it is here so that you may do so.... with the
-		understanding that doing so may break things and it is best practice to just update the
-		paths section in the config.ini.php file.
-
-	============================================================================================
-*/
-
-// do not modify without good reason
-function getPathIncApp() { return ( getCfg("paths")["inc_app"] ? getCfg("paths")["inc_app"] . "inc/"     : __DIR__."/../inc/" ) ; }
-function getPathCustom() { return ( getCfg("paths")["custom"] ? getCfg("paths")["custom"] . "custom/"  : __DIR__."/../custom/" ) ; }
-function getPathIncLib() { return ( getCfg("paths")["inc_lib"] ? getCfg("paths")["inc_lib"] . "inc/lib/" : __DIR__."/../inc/lib/" ) ; }
-function getPathAssets() { return ( getCfg("paths")["assets"]  ? getCfg("paths")["assets"]  . "assets/"  : "assets/" ) ; }
-
-// do not modify without good reason
-$inc_config_version = "1.3"; // in the unlikely event this file needs to be manually updated from the repository
-								// this will let you know if you need to replace this file with a new version
-								// If you do, be sure to copy over your modifications!
-
-// do not modify without good reason
-require_once( getPathIncLib()."php-project-framework/functions.php" ); // php-project-framework functions
-require_once( getPathIncApp()."functions-app.php" ); // this app''s functions
-require_once( getPathIncApp()."inc-app.php" ); // this app''s initialization
-
-/*  ============================================================================================
-    ********************************************************************************************
-    CUSTOM VARS AND FUNCTIONS
-	********************************************************************************************
-
-		functions-custom.php is where the end user (the individual who installed your application)
-		can place custom code and functions to extend the application. You, the application developer
-		can create template functions and place them in functions-custom.php for the installer
-		to modify without worry of being overwritten during updates.
-
-		See comments in functions-custom.php for more information.
-
-	============================================================================================
-*/
-
-require_once( getPathCustom()."functions-custom.php" ); // this app''s custom functions
+require_once $php_project_framework_dir;
 
 ?>
