@@ -31,7 +31,7 @@ function generateResponse() {
  *  EXECUTE
  */
 
-if ( isApprovedOrigin() ) {
+if ( isApprovedOrigin(TRUE) ) {
 
 	// call generateResponse from above
 	$json = generateResponse();
@@ -41,8 +41,6 @@ if ( isApprovedOrigin() ) {
 	} else {
 		displayHTMLdebugInfo($json);
 	}
-} else {
-    displayJSONnotApprovedOrigin();
 }
 
 ?>
