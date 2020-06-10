@@ -347,20 +347,27 @@ function setExeEndTime() {
 
 function setDebugSwitch() {
 
+	$debugHost = ( preg_match(getCfg('security')['allow-debug-ip'], getRequestClient() ) === 1 
+				&& preg_match(getCfg('security')['allow-debug-host'], getRequestHost() ) === 1 );
+
 	// if a user is an admin they are authorized and authenticated otherwise do security checks
 	if( userIsAdmin() || (
 			 getParameter("debug")
 			 && getCfg('security')['allow-debug']
-			 && preg_match(getCfg('security')['allow-debug-ip'], getRequestClient() ) === 1
-			 && preg_match(getCfg('security')['allow-debug-host'], getRequestHost() ) === 1
+			 && $debugHost
 		)
-		) {
+	) {
 		setApp("debug", TRUE);
 	}
 
+	// On test servers, turn on php reporting
+	if ( debugOn() || $debugHost ) {
+		ini_set('display_errors',1); // comment out when in production - display errors
+		ini_set('display_startup_errors', 1); // comment out when in production - display startup errors
+		error_reporting(E_ALL); // comment out when in production - display all errors
+	}
+
 	if (debugOn()) {
-		ini_set('display_errors', 1);
-		error_reporting(E_ALL);
 
 		getRequestOrigin();
 
@@ -1952,42 +1959,6 @@ function util_decodeCfgStrData( $data ) {
 	}
 
 	return $r;
-}
-
-
- /* *********************************************************************************************
- *	getCustomHTML( $data )
- *
- *  For HTML we can either bring in a file from the custom folder on the server, or use
- *  the html text already in the variable
- *  Essentially we check to see if we are using a file, if not we just send back the code
- *  sent to us
- *
- *  [[FILE:blah-blah.html]]
- *
- *  @param string $data The string to convert to an array
- */
-
-function getCustomHTML($data) {
-	$html = "";
-
-	$regex = "/(?<=^\[\[FILE:)[A-Za-z0-9_-]+\.html(?=\]\]$)/"; // positive, non capturing lookahead and behind strips "[[FILE:" and "]]" in one shot
-
-	// if [[FILE:somefile.html]] then read in the file
-	if ( preg_match($regex, $data, $matches) === 1 ) { // if a match found (===1) then put the match in $matches array
-		$filename = array_pop($matches); // matches is an array with (presumably) 1 element, but we're just cautious
-
-		try { // read the file contents from the custom folder
-			$html = file_get_contents ( __DIR__."/../../../custom/html/".$filename );
-		} catch (Exception $e) {
-			logMsg($e);
-		}
-
-	} else { // it's just plain html text
-		$html = $data;
-	}
-
-	return $html;
 }
 
 ?>

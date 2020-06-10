@@ -26,10 +26,10 @@ Uncomment these lines when in development/troubleshooting
 *******************************************************************************
 */
 
-// UNCOMMENT THESE LINES FOR ADDITIONAL ERROR REPORTING
-ini_set('display_errors',1); // comment out when in production - display errors
-ini_set('display_startup_errors', 1); // comment out when in production - display startup errors
-error_reporting(E_ALL); // comment out when in production - display all errors
+// UNCOMMENT THESE LINES FOR ADDITIONAL ERROR REPORTING BEFORE CONFIG LOADS
+//ini_set('display_errors',1); // comment out when in production - display errors
+//ini_set('display_startup_errors', 1); // comment out when in production - display startup errors
+//error_reporting(E_ALL); // comment out when in production - display all errors
 
 
 /*
