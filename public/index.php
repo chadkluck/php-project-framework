@@ -31,15 +31,6 @@ $pageTitle = "Hello World";
 
 <?php
 if(debugOn()) {
-
-    echo "<h3>JSON RAW</h3>";
-    echo "<p>";
-    echo json_encode($json);
-    echo "</p>";
-    echo "<h3>JSON FORMATTED</h3>";
-    echo "<pre>";
-    print_r($json);
-    echo "</pre>";
     appExecutionEnd();
 }
 

@@ -24,7 +24,7 @@ Anyone developing a simple web application that needs to return a web page or JS
 
 There are 3 template areas. Some are a library, some are used by you, the developer, and some are updated by the end user you are developing the application for. Note that "end user" is the person installing the application you created onto their own server and configuring it to run on their server. If you are developing this application for your own use then you are your own end user.
 
-1. /private/lib/php-project-framework: These files shouldn't be modified unless you wish to ignore any future updates of the PHP Project Framework. These are maintained by chadkluck.
+1. /private/lib/php-project-framework: These files shouldn't be modified unless you wish to ignore any future updates of the PHP Project Framework. These are maintained in this repository.
 2. /public/api.php, /public/index.php, and /private/app/: These files are yours to develop as well as any other file you create. Add access to data sources such as AWS, MySQL, other APIs, etc.
 3. /public/assets/custom/, /private/app/custom/: These directories are where you can invite those who install your application to make modifications to customize the config and add their own functions to extend your application. Any changes you make as the application developer should not affect any customizations made by the end user.
 
@@ -32,8 +32,11 @@ There are 3 template areas. Some are a library, some are used by you, the develo
 
 1. Upload contents of private into a private directory
 2. Upload contents of public into a public (web facing directory)
-3. Update {public}/inc/inc.php with the location of your private directory
-4. Update {private}/app/custom/config.ini.php
+3. Update {public}/inc/inc.php with the location of your private directory (if you install at {serverpath}/private/app/ and {serverpath}/{public}/inc then no changes necessary)
+4. Visit yourdomain.com/index.php and you should see a 'Hello World' page!
+4. Update {private}/app/custom/config.ini.php by following the comments in that file. Make minor changes and test frequently.
+5. Add functions to /private/{app}/ and call them from api.php or index.php
+6. If you are making an API and have no need for a web page, delete index.php and rename api.php to index.php
 
 The default the following file structure is assumed:
 - {serverpath}/private/ (directory not accessible to the web)

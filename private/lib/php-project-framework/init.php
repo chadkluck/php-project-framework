@@ -197,6 +197,23 @@ setDebugSwitch();
 
 /*
     ***************************************************************************
+	LOAD IN OPTIONAL LIBRARIES
+	---------------------------------------------------------------------------
+
+	If sixtythreeklabs_php_app_enable_optional_libs was defined, then load them
+	in.
+
+	***************************************************************************
+*/
+
+if ( defined("sixtythreeklabs_php_app_enable_optional_ext") ) {
+	foreach (sixtythreeklabs_php_app_enable_optional_ext as $ext) {
+		require_once getPathIncLib()."php-project-framework/".$ext.".php";
+	}
+}
+
+/*
+    ***************************************************************************
 	SET EXECUTION START TIME
 	---------------------------------------------------------------------------
 

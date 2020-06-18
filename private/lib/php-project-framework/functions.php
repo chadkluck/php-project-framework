@@ -358,13 +358,17 @@ function setDebugSwitch() {
 		)
 	) {
 		setApp("debug", TRUE);
+		logMsg("Debug turned on");
 	}
+
+	logMsg("Debug Host: ".$debugHost);
 
 	// On test servers, turn on php reporting
 	if ( debugOn() || $debugHost ) {
 		ini_set('display_errors',1); // comment out when in production - display errors
 		ini_set('display_startup_errors', 1); // comment out when in production - display startup errors
 		error_reporting(E_ALL); // comment out when in production - display all errors
+		logMsg("PHP error reporting turned on");
 	}
 
 	if (debugOn()) {

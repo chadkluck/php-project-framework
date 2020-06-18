@@ -1,7 +1,7 @@
 <?php
 // lock down - turn off errors
-ini_set('display_errors', '0'); // Do not modify - see below
-error_reporting(0); // Do not modify - see below
+ini_set('display_errors', '0'); // Do not modify - error reporting will automatically be turned on for specified hosts and IPs
+error_reporting(0); // Do not modify - error reporting will automatically be turned on for specified hosts and IPs
 /* 
 ===============================================================================
 *******************************************************************************
@@ -10,23 +10,21 @@ PHP PROJECT FRAMEWORK INITIALIZATION SETTINGS
 
 This script file locates the initialization settings to get the app running
 
+Version: 2020-06-16
+
 *******************************************************************************
 ===============================================================================
 */
 
 
-/*
-*******************************************************************************
-1. TURN ON ERROR REPORTING FOR DEVELOPMENT AND DEBUG
--------------------------------------------------------------------------------
-
-When in production, these lines should be commented out
-Uncomment these lines when in development/troubleshooting
-
-*******************************************************************************
-*/
-
-// UNCOMMENT THESE LINES FOR ADDITIONAL ERROR REPORTING BEFORE CONFIG LOADS
+/* UNCOMMENT THESE LINES FOR ADDITIONAL ERROR REPORTING BEFORE CONFIG LOADS
+   When in production these lines should be commented out. If debug host and IP
+   is set in config then they are automatically enabled when running on dev/test
+   hosts. This is only if you see errors before config file loads or if you see
+   errors in production that you don't see in dev/test. Looking at your server
+   error logs is also an option :) Explore your options before uncommenting
+   these. You don't want php errors showing to the end user in production.
+   You've been warned. */
 //ini_set('display_errors',1); // comment out when in production - display errors
 //ini_set('display_startup_errors', 1); // comment out when in production - display startup errors
 //error_reporting(E_ALL); // comment out when in production - display all errors
@@ -34,7 +32,7 @@ Uncomment these lines when in development/troubleshooting
 
 /*
 *******************************************************************************
-2. SET THE APP NAME (Optional)
+1. SET THE APP NAME (Optional)
 	Default is "app"
 -------------------------------------------------------------------------------
 
@@ -59,22 +57,10 @@ sixtythreeklabs_php_app_private_directory_location
 CONST sixtythreeklabs_php_app_private_directory_location = __DIR__."/../../private/"; // by default assumes there is a private directory up two directories from this one. (../../private/)
 CONST sixtythreeklabs_php_app_name = "app"; // Corresponds to the app directory in /{path-to-private}/app - you can rename this if you have mulitple apps that such as "app-8ball"
 
+// Uncomment and modify if you are loading in optional php-project-framework extensions
+//define("sixtythreeklabs_php_app_enable_optional_ext", ["cache-proxy"]);
+
 // DO NOT MODIFY THIS LINE
 require_once sixtythreeklabs_php_app_private_directory_location . "lib/php-project-framework/init.php";
-
-/*
-*******************************************************************************
-3. ENABLE/DISABLE PHP-PROJECT-FRAMEWORK EXTENSIONS (Optional)
--------------------------------------------------------------------------------
-
-In the future there may be additional modules included in php-project-framework
-
-They may be enabled/disabled by including or commenting out their inclusion
-
-*******************************************************************************
-*/
-
-// Cache-Proxy - Provides caching for api and curl requests (github.com/USTLibraries/cache-proxy)
-//require_once getPathIncLib() . "php-project-framework/cache-proxy.php"; 
 
 ?>
